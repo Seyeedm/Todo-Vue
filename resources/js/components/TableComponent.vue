@@ -5,8 +5,8 @@
             <v-text-field :loading="loading" density="compact" variant="solo" label="Add Todo" v-model.lazy="title"
                 append-inner-icon="mdi-magnify" single-line hide-details @click:append-inner="onClick"></v-text-field>
         </v-card-text>
-        <v-btn class="storetodo" @click="StoreTodo" style="margin-right:1rem">Add</v-btn>
-        <v-btn class="edittodo" v-if="edit_mode" @click="EditTodo(item.id)" style="margin-right:1rem;">Update</v-btn>
+        <v-btn class="storetodo" v-if="!edit_mode" @click="StoreTodo" style="margin-right:1rem">Add</v-btn>
+        <v-btn class="edittodo" v-else @click="UpdateTodo()" style="margin-right:1rem;">Update</v-btn>
     </v-card>
     <v-table style="width: 500px;">
         <thead>
@@ -22,7 +22,7 @@
         <tbody>
             <tr v-for="item in todos" :key="item.title">
                 <td>{{ item.title }}</td>
-                <td><v-btn @click="DeleteTodo(item.id)">delete</v-btn><v-btn @click="replacebtn(item.title)">edit</v-btn></td>
+                <td><v-btn @click="DeleteTodo(item.id)">delete</v-btn><v-btn @click="edit(item.title,item.id)">edit</v-btn></td>
             </tr>
         </tbody>
     </v-table>
@@ -36,7 +36,8 @@ export default {
         return {
             todos:[],
             title:"",
-            edit_mode:false
+            edit_mode:false,
+            edit_id:""
         }
     },
     mounted() {
@@ -70,8 +71,8 @@ export default {
                 console.log(error)
             })
         },
-        EditTodo(index){
-            axios.post("http://localhost:8000/api/todo",{
+        UpdateTodo(){
+            axios.put("http://localhost:8000/api/todo"+"/"+this.edit_id,{
                 title:this.title
             })
             .then((response) => {
@@ -81,14 +82,10 @@ export default {
                 console.log(error)
             })
         },
-        replacebtn(title){
-            let storetodo = document.querySelector(".storetodo");
+        edit(title,id){
             this.edit_mode=true
-            storetodo.style.display="none"
-            let edittodo = document.querySelector(".edittodo");
-            edittodo.style.display="block"
             this.title=title
-            console.log(title)
+            this.edit_id=id
         }
     },
 }

@@ -26,6 +26,7 @@
 </html>
 <style>
     body{
+        background-color: #2D2C2E;
         box-sizing: border-box;
         margin: 0;
     }
